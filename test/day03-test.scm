@@ -6,9 +6,9 @@
 (test-equal "part1 example"
   357
   (part1 (parse-input "input/day03-example.txt")))
-;; (test-equal "part1"
-;;   0
-;;   (part1 (parse-input "input/day03.txt")))
+(test-equal "part1"
+  16927
+  (part1 (parse-input "input/day03.txt")))
 
 ;; (test-equal "part2 example"
 ;;   0
