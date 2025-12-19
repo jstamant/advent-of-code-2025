@@ -40,7 +40,34 @@
 (define (part1 data)
   (apply + (map find-max-joltage data)))
 
-(define (part2 data)
-  data)
+(define (find-max-joltage-12 bank)
+  "Like `find-max-joltage', but is 12 digits long, and must still be in
+ascending order"
+  ;; each digit: find the left-most largest digit from the previous
+  ;; digit, and that still makes room for the remaining digits.
+  (let loop-batteries ((joltage "")
+                       (remaining-batteries 12)
+                       (remaining-bank bank))
+    (if (<= remaining-batteries 0)
+        (string->number joltage)
+        (let loop-batt ((batteries (string-drop-right remaining-bank (- remaining-batteries 1)))
+                        (max-battery '(0 0))
+                        (position 0))
+          (cond ((string=? "" batteries)
+                 (loop-batteries (string-append joltage (number->string (car max-battery)))
+                                 (- remaining-batteries 1)
+                                 (string-drop remaining-bank (+ 1 (cadr max-battery)))))
+                ((> (string->number (string-take batteries 1)) (car max-battery))
+                 (loop-batt (string-drop batteries 1)
+                            (list (string->number (string-take batteries 1)) position)
+                            (+ 1 position)))
+                (else (loop-batt (string-drop batteries 1)
+                                 max-battery
+                                 (+ 1 position))))))))
 
-(part1 (parse-input "input/day03.txt"))
+;; Answer for part2 example is 3121910778619
+;; Answer for part2 is 167384358365132
+(define (part2 data)
+  (apply + (map find-max-joltage-12 data)))
+
+(part2 (parse-input "input/day03.txt"))
