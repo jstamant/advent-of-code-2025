@@ -43,9 +43,45 @@
              (loop (+ 1 x) y (+ acc (if (is-accessible? (cons x y) data) 1 0))))
             (else (loop (+ 1 x) y acc))))))
 
-;; Answer for part2 example is 0
-;; Answer for part2 is 0
+;; Answer for part2 example is 43
+;; Answer for part2 is 9120
 (define (part2 data)
-  data)
+  (let iterate ((grid data)
+                (acc-rolls 0))
+    (let* ((rows (length grid))
+           (cols (string-length (car grid)))
+           (iteration
+            (let next-row ((y 0) (rolls 0) (grid-in-prog '()))
+              (cond ((>= y rows)
+                     (list rolls grid-in-prog))
+                    (else
+                     (let ((row-data
+                            (let next-col ((x 0) (rolls-in-row 0) (new-row ""))
+                              (cond ((>= x cols)
+                                     (list rolls-in-row new-row))
+                                    ((char=? #\. (get-char-at x y grid))
+                                     (next-col
+                                      (+ 1 x)
+                                      rolls-in-row
+                                      (string-append new-row ".")))
+                                    ((char=? #\@ (get-char-at x y grid))
+                                     (let ((roll-accessible? (is-accessible? (cons x y) grid)))
+                                       (next-col
+                                        (+ 1 x)
+                                        (+ rolls-in-row (if roll-accessible? 1 0))
+                                        (string-append new-row (if roll-accessible? "." "@")))))
+                                    (else (throw 'error "don't think this should have happened"))))))
+                       (next-row
+                        (+ 1 y)
+                        (+ rolls (car row-data))
+                        (append grid-in-prog (list (cadr row-data)))))))))
+           (new-grid (cadr iteration))
+           (rolls-found (car iteration)))
+      (if (zero? rolls-found)
+          acc-rolls
+          (iterate new-grid (+ acc-rolls rolls-found))))))
 
-(part1 (parse-input "input/day04.txt"))
+;; (part1 (parse-input "input/day04-example.txt"))
+;; (part1 (parse-input "input/day04.txt"))
+;; (part2 (parse-input "input/day04-example.txt"))
+(part2 (parse-input "input/day04.txt"))

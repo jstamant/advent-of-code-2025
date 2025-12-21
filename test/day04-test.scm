@@ -10,11 +10,11 @@
   1478
   (part1 (parse-input "input/day04.txt")))
 
-;; (test-equal "part2 example"
-;;   0
-;;   (part2 (parse-input "input/day04-example.txt")))
-;; (test-equal "part2"
-;;   0
-;;   (part2 (parse-input "input/day04.txt")))
+(test-equal "part2 example"
+  43
+  (part2 (parse-input "input/day04-example.txt")))
+(test-equal "part2"
+  9120
+  (part2 (parse-input "input/day04.txt")))
 
 (test-end)
