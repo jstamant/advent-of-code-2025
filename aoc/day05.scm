@@ -6,7 +6,7 @@
 (define (string-range->cons-range str)
   (let* ((idx (string-index str #\-))
          (start (string->number (string-take str idx)))
-         (end (string->number (string-take-right str idx))))
+         (end (string->number (string-drop str (+ 1 idx)))))
     (cons start end)))
 
 ;; Returns a list of two elements,
@@ -40,12 +40,55 @@
                           1
                           (loop-ranges (cdr ranges))))))))))))
 
-;; Answer for part2 example is ?
-;; Answer for part2 is ?
+(define (sort-ranges ranges)
+  "Sorts a list of RANGES in the form (START . END), first by their
+START, then by their END."
+  (sort ranges (lambda (a b)
+                 (cond ((< (car a) (car b)) #t)
+                       ((> (car a) (car b)) #f)
+                       (else (< (cdr a) (cdr b)))))))
+
+(define (merge-ranges sorted-ranges)
+  "Takes a sorted list of RANGES in the form (START . END), and merges
+any overlaps."
+  (let loop ((ranges sorted-ranges)
+             (merged-ranges '()))
+    (cond
+     ((zero? (length ranges))
+      merged-ranges)
+     ((= 1 (length ranges))
+      (append merged-ranges (list (car ranges))))
+     (else
+      (let ((a (car ranges))
+            (b (cadr ranges)))
+        (cond
+         ;; no overlap
+         ((< (cdr a) (car b))
+          (loop (cdr ranges) (append merged-ranges (list a))))
+         ;; complete overlap
+         ((> (cdr a) (cdr b))
+          (loop (append (list a) (cddr ranges)) merged-ranges))
+         ;; partial overlap
+         ((>= (cdr a) (car b))
+          (loop (append (list (cons (car a) (cdr b))) (cddr ranges))
+                merged-ranges))))))))
+
+(define (sum-ranges ranges)
+  "Takes a list of RANGES in the form (START . END), and adds the ranges,
+START and END inclusive."
+  (let loop ((lst ranges)
+             (acc 0))
+    (if (null? lst)
+        acc
+        (let ((a (car lst)))
+          (loop (cdr lst) (+ 1 acc (- (cdr a) (car a))))))))
+
+;; Answer for part2 example is 14
+;; Answer for part2 is 347468726696961
 (define (part2 data)
-  data)
+  (sum-ranges (merge-ranges (sort-ranges (car data)))))
 
 ;; (part1 (parse-input "input/day05-example.txt"))
-(part1 (parse-input "input/day05.txt"))
+;; (part1 (parse-input "input/day05.txt"))
 ;; (part2 (parse-input "input/day05-example.txt"))
-;; (part2 (parse-input "input/day05.txt"))
+(part2 (parse-input "input/day05.txt"))

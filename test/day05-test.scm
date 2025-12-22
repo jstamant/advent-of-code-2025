@@ -10,11 +10,11 @@
   744
   (part1 (parse-input "input/day05.txt")))
 
-;; (test-equal "part2 example"
-;;   0
-;;   (part2 (parse-input "input/day05-example.txt")))
-;; (test-equal "part2"
-;;   0
-;;   (part2 (parse-input "input/day05.txt")))
+(test-equal "part2 example"
+  14
+  (part2 (parse-input "input/day05-example.txt")))
+(test-equal "part2"
+  347468726696961
+  (part2 (parse-input "input/day05.txt")))
 
 (test-end)
